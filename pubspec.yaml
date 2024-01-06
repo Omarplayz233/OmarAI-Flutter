@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  url_launcher: ^6.1.10
+  align_positioned: ^3.0.0
 
 dev_dependencies:
   flutter_test:
