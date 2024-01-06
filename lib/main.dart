@@ -4,7 +4,15 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List<Message> messages = [];
+  TextEditingController _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,23 +27,20 @@ class MyApp extends StatelessWidget {
           children: [
             Expanded(
               child: ListView(
-                reverse: true, // Start with the latest messages at the bottom
-                children: [
-                  MessageBubble(
-                    text: 'Hi!',
-                    isMe: true, // This message is from the user
-                  ),
-                  MessageBubble(
-                    text: 'Hi there!',
-                    isMe: false, // This message is from the other person
-                  ),
-                ],
+                reverse: true,
+                children: messages.map((message) {
+                  return MessageBubble(
+                    text: message.text,
+                    isMe: message.isMe,
+                  );
+                }).toList(),
               ),
             ),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
+                    controller: _textController,
                     decoration: InputDecoration(
                       labelText: 'Enter Text',
                       filled: true,
@@ -43,13 +48,31 @@ class MyApp extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
+                    onFieldSubmitted: (text) {
+                      String messageText = text.trim();
+                      if (messageText.isNotEmpty) {
+                        sendMessage(
+                            messageText, true); // Sent message from the user
+                        _textController
+                            .clear(); // Clear the text field after sending
+                        // Simulate receiving a message from the other person
+                        sendMessage('Example', false);
+                      }
+                    },
                   ),
                 ),
                 SizedBox(width: 16),
                 FloatingActionButton(
                   onPressed: () {
-                    // Simulate sending a message
-                    print('Message Sent: Hi!');
+                    String messageText = _textController.text.trim();
+                    if (messageText.isNotEmpty) {
+                      sendMessage(
+                          messageText, true); // Sent message from the user
+                      _textController
+                          .clear(); // Clear the text field after sending
+                      // Simulate receiving a message from the other person
+                      sendMessage('Example', false);
+                    }
                   },
                   mini: true,
                   child: Icon(Icons.send),
@@ -61,6 +84,20 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
+  void sendMessage(String text, bool isMe) {
+    setState(() {
+      messages.insert(0, Message(text: text, isMe: isMe));
+    });
+    print('Message Sent: $text');
+  }
+}
+
+class Message {
+  final String text;
+  final bool isMe;
+
+  Message({required this.text, required this.isMe});
 }
 
 class MessageBubble extends StatelessWidget {
@@ -78,7 +115,6 @@ class MessageBubble extends StatelessWidget {
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Material(
-            // Add a subtle shadow for a lifted effect
             elevation: 5.0,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(isMe ? 30 : 0),
@@ -91,7 +127,10 @@ class MessageBubble extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
                 text,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: isMe ? Colors.white : Colors.black,
+                ),
               ),
             ),
           ),
