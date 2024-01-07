@@ -167,56 +167,56 @@ class _MyAppState extends State<MyApp> {
     print('Message Sent: $text');
   }
 
-  Future<void> makeApiCall(String text) async {
-    // URL for the generative language API
-    String apiUrl =
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey";
+Future<void> makeApiCall(String text) async {
+  // URL for the generative language API
+  String apiUrl =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey";
 
-    try {
-      // Prepare the request body
-      var requestBody = {
-        "contents": [
-          {
-            "parts": [
-              {
-                "text": text,
-              }
-            ],
-          }
-        ]
-      };
+  try {
+    // Prepare the request body
+    var requestBody = {
+      "contents": [
+        {
+          "parts": [
+            {
+              "text": text,
+            }
+          ],
+        }
+      ]
+    };
 
-      // Create Dio instance
-      Dio dio = Dio();
+    // Create Dio instance
+    Dio dio = Dio();
 
-      // Make the Dio POST request
-      var response = await dio.post(
-        apiUrl,
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        data: jsonEncode(requestBody),
-      );
+    // Make the Dio POST request
+    var response = await dio.post(
+      apiUrl,
+      options: Options(headers: {'Content-Type': 'application/json'}),
+      data: jsonEncode(requestBody),
+    );
 
-      // Parse the response and get the AI's reply
-      var jsonResponse = json.decode(response.data);
+    // Parse the response and get the AI's reply
+    var jsonResponse = response.data;
 
-      if (jsonResponse != null &&
-          jsonResponse.containsKey("candidates") &&
-          jsonResponse["candidates"].isNotEmpty) {
-        var aiReply =
-            jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
+    if (jsonResponse != null &&
+        jsonResponse.containsKey("candidates") &&
+        jsonResponse["candidates"].isNotEmpty) {
+      var aiReply =
+          jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
 
-        // Display AI's reply in the UI
-        sendMessage(aiReply, false);
+      // Display AI's reply in the UI
+      sendMessage(aiReply, false);
 
-        print("API Response:");
-        print(response.data);
-      } else {
-        print("Invalid API response format");
-      }
-    } catch (error) {
-      print("Error making API call: $error");
+      print("API Response:");
+      print(response.data);
+    } else {
+      print("Invalid API response format");
     }
+  } catch (error) {
+    print("Error making API call: $error");
   }
+}
 }
 
 class Message {
