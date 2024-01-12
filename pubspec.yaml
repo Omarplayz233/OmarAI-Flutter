@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   url_launcher: ^6.1.10
   align_positioned: ^3.0.0
+  dio: ^5.4.0
+  flutter_markdown: ^0.6.18+3
 
 dev_dependencies:
   flutter_test:
